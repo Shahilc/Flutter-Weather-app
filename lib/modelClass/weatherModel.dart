@@ -49,7 +49,7 @@ class WeatherClass {
 
   Map<String, dynamic> toJson() => {
     "coord": coord?.toJson(),
-    "weather": weather.map((x) => x?.toJson()).toList(),
+    "weather": weather.map((x) => x.toJson()).toList(),
     "base": base,
     "main": main?.toJson(),
     "visibility": visibility,

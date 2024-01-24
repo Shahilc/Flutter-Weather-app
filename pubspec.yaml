@@ -40,6 +40,7 @@ dependencies:
   geocoding: ^2.1.1
   lottie: ^2.6.0
   fluttertoast: ^8.2.4
+  open_geocoder: ^0.0.1
 
 dev_dependencies:
   flutter_test:

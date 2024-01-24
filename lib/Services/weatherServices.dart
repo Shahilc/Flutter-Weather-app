@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../modelClass/fromApi.dart';
 import '../modelClass/weatherModel.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +18,16 @@ class WeatherService {
     if (response.statusCode == 200) {
       return WeatherClass.fromJson(jsonDecode(response.body));
     } else {
+      throw Exception('Failed to load Weather Data');
+    }
+  }
+  Future<GetDataFrom> getAddressWithLatLong({required double latitude, required double longitude}) async{
+    String getUrl="https://geocode.maps.co/reverse";
+    var response = await http.get(Uri.parse('$getUrl?lat=$latitude&lon=$longitude&api_key=65b1260ceb172227677874fti861189'));
+
+    if(response.statusCode == 200){
+      return GetDataFrom.fromJson(jsonDecode(response.body));
+    }else{
       throw Exception('Failed to load Weather Data');
     }
   }
@@ -35,4 +46,5 @@ class WeatherService {
     String? city=placeMarks[0].locality;
     return city ?? "";
   }
+
 }

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
+import 'package:open_geocoder/model/geo_address.dart';
+import 'package:open_geocoder/open_geocoder.dart';
 import 'package:weatherapp/Services/tempValues.dart';
 import 'package:weatherapp/Services/weatherServices.dart';
 import 'package:weatherapp/modelClass/weatherModel.dart';
 import '../../Services/flutterToast.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+import '../../modelClass/fromApi.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -15,9 +21,10 @@ class _HomePageState extends State<HomePage> {
 
  final _weatherService=WeatherService("3b2e83fb45d8c2d43d114fc4e47789ff");
  WeatherClass? weatherClass;
+ GetDataFrom? _dataFrom;
  bool loading=false;
  TextEditingController locationController=TextEditingController();
-
+@override
  String getWeatherAnimation(String mainCondition){
    switch(mainCondition.toLowerCase()){
      case 'clouds':
@@ -39,16 +46,7 @@ class _HomePageState extends State<HomePage> {
        return 'assets/sunny.json';
    }
  }
- _fetchWeather()async{
-   setState(() {
-     loading=false;
-   });
-   String cityName;
-   if(locationController.text.isEmpty) {
-      cityName=await _weatherService.getCurrentCity();
-   }else{
-      cityName=locationController.text.trim();
-   }
+ _getCityData(String cityName)async{
    try{
      final weather=await _weatherService.getWeather(cityName);
      setState(() {
@@ -65,6 +63,36 @@ class _HomePageState extends State<HomePage> {
      });
    }
  }
+ _fetchWeather()async{
+   setState(() {
+     loading=false;
+   });
+   if (kIsWeb) {
+     Position position = await Geolocator.getCurrentPosition(
+       desiredAccuracy: LocationAccuracy.high,
+     );
+     final data=await _weatherService.getAddressWithLatLong(latitude:position.latitude,longitude:position.longitude);
+     _dataFrom=data;
+     String cityName;
+     if(locationController.text.isEmpty) {
+       List<String>name=_dataFrom!.displayName!.split(",");
+       cityName=name[0];
+     }else{
+       cityName=locationController.text.trim();
+     }
+     _getCityData(cityName);
+
+   }else{
+     String cityName;
+     if(locationController.text.isEmpty) {
+       cityName=await _weatherService.getCurrentCity();
+     }else{
+       cityName=locationController.text.trim();
+     }
+     _getCityData(cityName);
+   }
+ }
+
   @override
   Widget build(BuildContext context) {
     return  WillPopScope(

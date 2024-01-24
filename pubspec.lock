@@ -256,6 +256,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  open_geocoder:
+    dependency: "direct main"
+    description:
+      name: open_geocoder
+      sha256: "5f9998076f0b6b5be471876fe4e28f26bfb48edf2fef7cf0451fcea0f6e954c6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   path:
     dependency: transitive
     description:
