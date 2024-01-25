@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
-import 'package:open_geocoder/model/geo_address.dart';
-import 'package:open_geocoder/open_geocoder.dart';
 import 'package:weatherapp/Services/tempValues.dart';
 import 'package:weatherapp/Services/weatherServices.dart';
 import 'package:weatherapp/modelClass/weatherModel.dart';
@@ -24,6 +22,15 @@ class _HomePageState extends State<HomePage> {
  WeatherClass? weatherClass;
  GetDataFrom? _dataFrom;
  bool loading=false;
+ String? _value;
+ List data=[
+   'Chennai',
+   'malappuram',
+   'vengara',
+   'Thiruvananthapuram',
+   'Kollam',
+   'Kochi',
+ ];
  TextEditingController locationController=TextEditingController();
 @override
  String getWeatherAnimation(String mainCondition){
@@ -64,7 +71,7 @@ class _HomePageState extends State<HomePage> {
      });
    }
  }
- _fetchWeather()async{
+ _fetchWeather(String value)async{
    setState(() {
      loading=false;
    });
@@ -86,7 +93,8 @@ class _HomePageState extends State<HomePage> {
    }else{
      String cityName;
      if(locationController.text.isEmpty) {
-       cityName=await _weatherService.getCurrentCity();
+       cityName=value;
+       // cityName=await _weatherService.getCurrentCity();
      }else{
        cityName=locationController.text.trim();
      }
@@ -238,7 +246,7 @@ class _HomePageState extends State<HomePage> {
                           onSubmitted: (value){
                             if(value.isNotEmpty)
                            {
-                             _fetchWeather();
+                             _fetchWeather("");
                              setState(() {
                                TempValues.showWeather=true;
                              });
@@ -268,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                       child: InkWell(
                         onTap: (){
                           locationController.clear();
-                          _fetchWeather();
+                          _fetchWeather("");
                           setState(() {
                             TempValues.showWeather=true;
                           });
@@ -403,30 +411,72 @@ class _HomePageState extends State<HomePage> {
                       child: Text('Weather app',style: TextStyle(color: Colors.blue,fontSize: 15,fontWeight: FontWeight.bold),),
                     ),
                     const Divider(color: Colors.grey,),
+                    // Padding(
+                    //   padding:  const EdgeInsets.only(top: 10,left: 15,right: 15),
+                    //   child: SizedBox(
+                    //     height: 45,
+                    //     child: TextField(
+                    //       autofocus: false,
+                    //       textAlign: TextAlign.center,
+                    //       controller: locationController,
+                    //       textInputAction: TextInputAction.go,
+                    //       onSubmitted: (value){
+                    //         if(value.isNotEmpty)
+                    //         {
+                    //           _fetchWeather("");
+                    //           setState(() {
+                    //             TempValues.showWeather=true;
+                    //           });
+                    //         }
+                    //       },
+                    //       decoration: const InputDecoration(
+                    //         hintText: 'Enter city name',
+                    //         hintStyle: TextStyle(fontSize: 14),
+                    //         contentPadding: EdgeInsets.only(top: 10,left: 5),
+                    //         border:OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),),
+                    //
+                    //     ),
+                    //   ),
+                    // ),
                     Padding(
                       padding:  const EdgeInsets.only(top: 10,left: 15,right: 15),
-                      child: SizedBox(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey)
+                        ),
                         height: 45,
-                        child: TextField(
-                          autofocus: false,
-                          textAlign: TextAlign.center,
-                          controller: locationController,
-                          textInputAction: TextInputAction.go,
-                          onSubmitted: (value){
-                            if(value.isNotEmpty)
-                            {
-                              _fetchWeather();
-                              setState(() {
-                                TempValues.showWeather=true;
-                              });
-                            }
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: DropdownButton(
+                            isExpanded: true,
+                            underline: SizedBox(),
+                            value: _value,
+                            items: data.map((e) {
+                              return DropdownMenuItem(
+                                child: Text(e),
+                                value: e.toString(),
+                              );
+                            }).toList(),
+                            // items: [
+                            //   DropdownMenuItem(
+                            //     value: 'Chennai',
+                            //     child: Text('Chennai'),
+                            //   ),
+                            //   DropdownMenuItem(
+                            //     value: 'Malappuram',
+                            //       child: Text('Malappuram')),
+                            // ],
+                            onChanged: (value) {
+                            print(value);
+                            setState(() {
+                              _value=value;
+                              TempValues.showWeather=true;
+                            });
+                            locationController.clear();
+                            _fetchWeather(value!);
                           },
-                          decoration: const InputDecoration(
-                            hintText: 'Enter city name',
-                            hintStyle: TextStyle(fontSize: 14),
-                            contentPadding: EdgeInsets.only(top: 10,left: 5),
-                            border:OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),),
-
+                          ),
                         ),
                       ),
                     ),
@@ -445,7 +495,7 @@ class _HomePageState extends State<HomePage> {
                       child: InkWell(
                         onTap: (){
                           locationController.clear();
-                          _fetchWeather();
+                          _fetchWeather("");
                           setState(() {
                             TempValues.showWeather=true;
                           });
